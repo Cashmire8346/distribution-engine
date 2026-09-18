@@ -1,0 +1,12 @@
+{
+  "name": "dmf-distribution-engine",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "for f in src/**/*.js; do node --check \"$f\"; done",
+    "dev": "node --watch demo.js",
+    "demo": "node demo.js",
+    "verify": "node demo.js",
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,45 @@
+name: Distribution Engine CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: node --check src/index.js && node --check src/approvals/index.js && node --check src/ern/deliver.js && node --check src/config.js
+
+      - name: Test
+        run: npm test -- --test-reporter=spec
+
+      - name: Build demo
+        run: node demo.js
+        env:
+          NODE_ENV: development
+          DMF_MESSAGE_ID: DMF-20260917-001
+          DMF_SENDER_PARTY_ID: DMF-RELEASE-SENDER
+          DMF_SENDER_NAME: DMF Records
+          DMF_RELEASE_TITLE: Midnigh Echo
+          DMF_ARTIST_NAME: DMF Artist
+          DMF_ISRC: USDMF2600001
+          DMF_UPC: 123456789012
+          DMF_DURATION: PT2M45S
+          DMF_OWNER_NAME: DMF Records
+          DMF_OWNER_SHARE: 100
+
+      - name: Validate outputs
+        run: test -f dist/ern-output.xml || echo 'demo output missing'

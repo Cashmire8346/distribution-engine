@@ -1,0 +1,9 @@
+{
+  "approvals": [
+    {
+      "releaseId": "REL-001",
+      "status": "rejected",
+      "approvedBy": "ops"
+    }
+  ]
+}
