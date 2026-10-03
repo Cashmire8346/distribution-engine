@@ -25,21 +25,3 @@ jobs:
 
       - name: Test
         run: npm test -- --test-reporter=spec
-
-      - name: Build demo
-        run: node demo.js
-        env:
-          NODE_ENV: development
-          DMF_MESSAGE_ID: DMF-20260917-001
-          DMF_SENDER_PARTY_ID: DMF-RELEASE-SENDER
-          DMF_SENDER_NAME: DMF Records
-          DMF_RELEASE_TITLE: Midnigh Echo
-          DMF_ARTIST_NAME: DMF Artist
-          DMF_ISRC: USDMF2600001
-          DMF_UPC: 123456789012
-          DMF_DURATION: PT2M45S
-          DMF_OWNER_NAME: DMF Records
-          DMF_OWNER_SHARE: 100
-
-      - name: Validate outputs
-        run: test -f dist/ern-output.xml || echo 'demo output missing'

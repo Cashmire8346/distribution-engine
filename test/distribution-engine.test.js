@@ -1,8 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import { validateIsrc, validateUpc, validateIsni, validateGrid, validateOwnershipSplit, validateReleaseIdentifiers } from '../src/identifiers/index.js'
 import { generateErn, validateErnXml } from '../src/ern/index.js'
 import { ApprovalGate, FileApprovalStore, InMemoryIdentifierStore, deliverErn } from '../src/index.js'
+
+const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'dmf-engine-'))
 
 test('validates identifiers and rejects malformed values', () => {
   assert.equal(validateIsrc('USDMF2600001'), true)
@@ -57,7 +62,7 @@ test('fails closed when no approval export is present', () => {
 })
 
 test('denies pending or rejected approval records', () => {
-  const store = new FileApprovalStore('tmp-approval-deny.json')
+  const store = new FileApprovalStore(path.join(scratch, 'approval-deny.json'))
   store.write({ approvals: [{ releaseId: 'REL-001', status: 'pending', approvedBy: 'ops' }] })
 
   const gate = new ApprovalGate(store)
@@ -70,7 +75,7 @@ test('denies pending or rejected approval records', () => {
 })
 
 test('allows delivery when a matching approved record exists', () => {
-  const store = new FileApprovalStore('tmp-approval-allow.json')
+  const store = new FileApprovalStore(path.join(scratch, 'approval-allow.json'))
   store.write({ approvals: [{ releaseId: 'REL-APPROVED', status: 'approved', approvedBy: 'ops', approvedAt: '2026-09-18T00:00:00.000Z' }] })
 
   const gate = new ApprovalGate(store)
@@ -99,8 +104,8 @@ test('deliverErn denies missing approval exports without crashing', () => {
 })
 
 test('deliverErn writes output when an approved record matches', () => {
-  const file = 'tmp-approval-deliver-allow.json'
-  const output = 'tmp-ern-output.xml'
+  const file = path.join(scratch, 'approval-deliver-allow.json')
+  const output = path.join(scratch, 'ern-output.xml')
   const store = new FileApprovalStore(file)
   store.write({ approvals: [{ releaseId: 'REL-WRITE', status: 'approved', approvedBy: 'ops', approvedAt: '2026-09-18T00:00:00.000Z' }] })
 
@@ -118,7 +123,7 @@ test('deliverErn writes output when an approved record matches', () => {
   }, { approvalFile: file, outputPath: output })
 
   assert.equal(result.approved, true)
-  assert.match(result.outputPath, /tmp-ern-output.xml/)
+  assert.equal(result.outputPath, output)
   assert.ok(result.xml.includes('<MessageId>DMF-20260916-003'))
 })
 

@@ -17,23 +17,8 @@ The project now includes the same production guard rails you want across the res
 ```bash
 npm install
 npm test
-npm run demo
-```
-
-The demo writes the XML to stdout only after real release values are provided:
-
-```bash
-DMF_MESSAGE_ID="..." \
-DMF_SENDER_PARTY_ID="..." \
-DMF_SENDER_NAME="..." \
-DMF_RELEASE_TITLE="..." \
-DMF_ARTIST_NAME="..." \
-DMF_ISRC="..." \
-DMF_UPC="..." \
-DMF_DURATION="PT3M12S" \
-DMF_OWNER_NAME="..." \
-DMF_OWNER_SHARE="100" \
-npm run demo
+npm start        # server on http://localhost:3000
+npm run electron # desktop app
 ```
 
 ## Approval gate behavior
@@ -53,6 +38,6 @@ This gate is the single delivery boundary future sandbox or agent code must pass
 ## Important limits
 
 - The ERN output is structurally validated by the local checks; it has not been validated against the official DDEX XSD.
-- No identifier, artist, owner, or DSP party value is bundled in the demo. The command fails when any required real value is missing.
-- Test fixtures exist only inside the automated tests and are never used by the demo or delivery path.
+- No identifier, artist, owner, or DSP party value is bundled. Delivery fails when any required real value is missing.
+- Test fixtures exist only inside the automated tests and are never used by the delivery path.
 - This package does not submit releases to DSPs, mint identifiers, or bypass approval. Those steps remain later stages.

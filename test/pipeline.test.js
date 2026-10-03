@@ -3,8 +3,6 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { spawnSync } from 'node:child_process'
 
 import {
   validateIsni,
@@ -16,8 +14,6 @@ import {
   deliverErn
 } from '../src/index.js'
 import { REQUIRED_ENV, getRuntimeConfig } from '../src/config.js'
-
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 function validRelease(overrides = {}) {
   return {
@@ -158,38 +154,4 @@ test('runtime config reports missing keys without throwing in development', () =
 
   assert.equal(config.nodeEnv, 'development')
   assert.deepEqual(config.missing, REQUIRED_ENV)
-})
-
-test('demo succeeds on a complete environment and writes a parseable ERN file', () => {
-  const run = spawnSync(process.execPath, ['demo.js'], {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    env: {
-      ...process.env,
-      NODE_ENV: 'production',
-      DMF_MESSAGE_ID: 'DMF-20260920-002',
-      DMF_SENDER_PARTY_ID: 'DMF-RELEASE-SENDER',
-      DMF_SENDER_NAME: 'DMF Records',
-      DMF_RELEASE_TITLE: 'Midnight Echo',
-      DMF_ARTIST_NAME: 'DMF Artist',
-      DMF_ISRC: 'USDMF2600001',
-      DMF_UPC: '123456789012',
-      DMF_DURATION: 'PT2M45S',
-      DMF_OWNER_NAME: 'DMF Records',
-      DMF_OWNER_SHARE: '100'
-    }
-  })
-
-  assert.equal(run.status, 0, run.stderr)
-  assert.ok(run.stdout.includes('<ICPN>123456789012</ICPN>'))
-})
-
-test('demo fails closed when required release values are absent', () => {
-  const env = { ...process.env, NODE_ENV: 'development' }
-  for (const key of REQUIRED_ENV) delete env[key]
-
-  const run = spawnSync(process.execPath, ['demo.js'], { cwd: repoRoot, encoding: 'utf8', env })
-
-  assert.notEqual(run.status, 0)
-  assert.match(run.stderr, /Set real release values/)
 })

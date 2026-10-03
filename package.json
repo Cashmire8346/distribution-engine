@@ -18,9 +18,7 @@
   },
   "scripts": {
     "build": "for f in src/**/*.js; do node --check \"$f\"; done",
-    "dev": "node --watch demo.js",
-    "demo": "node demo.js",
-    "verify": "node demo.js",
+    "dev": "node --watch server.js",
     "start": "node server.js",
     "electron": "node scripts/electron-launch.mjs",
     "smoke": "node scripts/smoke.mjs",
