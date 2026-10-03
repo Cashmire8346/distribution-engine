@@ -1,34 +1,20 @@
 import { InMemoryIdentifierStore, generateErn, validateErnXml } from './src/index.js'
+import { REQUIRED_ENV, getRuntimeConfig } from './src/config.js'
 
-const requiredEnvironment = [
-  'DMF_MESSAGE_ID',
-  'DMF_SENDER_PARTY_ID',
-  'DMF_SENDER_NAME',
-  'DMF_RELEASE_TITLE',
-  'DMF_ARTIST_NAME',
-  'DMF_ISRC',
-  'DMF_UPC',
-  'DMF_DURATION',
-  'DMF_OWNER_NAME',
-  'DMF_OWNER_SHARE'
-]
-
-const missingEnvironment = requiredEnvironment.filter((key) => !process.env[key])
+// Fail closed: the demo refuses to invent release values. Every required
+// DMF_* value must come from the operator's environment.
+const missingEnvironment = REQUIRED_ENV.filter((key) => !String(process.env[key] || '').trim())
 if (missingEnvironment.length > 0) {
   throw new Error(`Set real release values before generating ERN: ${missingEnvironment.join(', ')}`)
 }
 
+const { release: releaseValues } = getRuntimeConfig()
+
 const registry = new InMemoryIdentifierStore()
 const release = registry.create({
-  messageId: process.env.DMF_MESSAGE_ID,
-  senderPartyId: process.env.DMF_SENDER_PARTY_ID,
-  senderName: process.env.DMF_SENDER_NAME,
-  title: process.env.DMF_RELEASE_TITLE,
-  artist: process.env.DMF_ARTIST_NAME,
-  isrc: process.env.DMF_ISRC,
-  upc: process.env.DMF_UPC,
-  duration: process.env.DMF_DURATION,
-  owners: [{ name: process.env.DMF_OWNER_NAME, share: Number(process.env.DMF_OWNER_SHARE) }]
+  ...releaseValues,
+  // approve against the message id unless a dedicated release id is supplied
+  releaseId: String(process.env.DMF_RELEASE_ID || releaseValues.messageId).trim()
 })
 
 const xml = generateErn(release)

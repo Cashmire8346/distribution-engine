@@ -21,6 +21,99 @@ export { generateErn, validateErnXml } from './ern/index.js'
 export { FileApprovalStore, ApprovalGate } from './approvals/index.js'
 export { deliverErn } from './ern/deliver.js'
 
+export {
+  Roster,
+  RosterError,
+  ROSTER_SEED,
+  ROSTER_ROLES,
+  ROSTER_METRIC_SOURCES,
+  parseSpotifyArtistUrl,
+  validateMetric
+} from './roster/index.js'
+
+export {
+  StudioStore,
+  StudioError,
+  SESSION_STATUSES,
+  TRACK_KINDS,
+  createSession,
+  normaliseTrack,
+  processAudio
+} from './studio/index.js'
+
+export { WorkshopStore, WorkshopError, WORKSHOP_STATUSES, createWorkshopItem } from './workshop/index.js'
+
+export {
+  RenderQueue,
+  VideoError,
+  STYLE_PRESETS,
+  JOB_STATES,
+  planCuts,
+  buildScenes,
+  createVideoProject,
+  renderFrames
+} from './video/index.js'
+
+// Da'Riyah provider adapters - the boundary between this engine and an
+// external video model.
+export {
+  ProviderRegistry,
+  ProviderNotConfiguredError,
+  PROVIDER_CONTRACT,
+  buildClipRequest,
+  validateProvider,
+  stubProvider
+} from './video/providers.js'
+
+// Da'Riyah engine divisions and their real status.
+export {
+  DIVISIONS,
+  DIVISION_STATUS,
+  DariyahError,
+  listDivisions,
+  getDivision,
+  engineStatus
+} from './dariyah/index.js'
+
+// Da'Riyah Engineering - the gate a generated migration must pass.
+export {
+  MigrationGate,
+  MigrationApprovalStore,
+  MigrationGateError,
+  MIGRATION_KINDS,
+  analyseMigration,
+  createMigration,
+  digestSql
+} from './dariyah/migrations.js'
+
+// Da'Riyah Engineering - code-model adapter contract.
+export {
+  CodeProviderRegistry,
+  CodeProviderError,
+  CodeModelNotConfiguredError,
+  CODE_PROVIDER_CONTRACT,
+  CODE_LANGUAGES,
+  buildCodeRequest,
+  wrapProposal,
+  validateCodeProvider,
+  stubCodeProvider
+} from './dariyah/code.js'
+
+// Da'Riyah App Builder - sandbox contract for running generated code.
+export {
+  SandboxRunner,
+  SandboxError,
+  NoSandboxAvailableError,
+  SANDBOX_CONTRACT,
+  SANDBOX_LIMITS,
+  buildRunSpec,
+  validateSandbox,
+  NoSandbox
+} from './dariyah/sandbox.js'
+
+// Da'Riyah - append-only audit log for generated artefacts.
+export { AuditLog, AuditError, AUDIT_EVENTS } from './dariyah/audit.js'
+
 export class InMemoryIdentifierStore {
   #releases = new Map()
   #isrcs = new Map()

@@ -1,12 +1,33 @@
 {
   "name": "dmf-distribution-engine",
+  "version": "0.1.0",
+  "description": "DMF distribution engine and roster dashboard",
+  "author": "Deangelo Jackson <cash@dmfrecords.com>",
   "private": true,
   "type": "module",
+  "main": "electron.js",
+  "build": {
+    "appId": "com.dmf.distribution-engine",
+    "files": [
+      "electron.js",
+      "server.js",
+      "src/**/*",
+      "public/**/*",
+      "package.json"
+    ]
+  },
   "scripts": {
     "build": "for f in src/**/*.js; do node --check \"$f\"; done",
     "dev": "node --watch demo.js",
     "demo": "node demo.js",
     "verify": "node demo.js",
+    "start": "node server.js",
+    "electron": "node scripts/electron-launch.mjs",
+    "smoke": "node scripts/smoke.mjs",
     "test": "node --test"
+  },
+  "devDependencies": {
+    "electron": "^36.4.0",
+    "electron-builder": "^26.15.3"
   }
 }
