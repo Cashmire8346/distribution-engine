@@ -1,31 +1,25 @@
 {
-  "name": "dmf-distribution-engine",
-  "version": "0.1.0",
-  "description": "DMF distribution engine and roster dashboard",
-  "author": "Deangelo Jackson <cash@dmfrecords.com>",
+  "name": "distribution-engine",
   "private": true,
+  "version": "0.1.0",
   "type": "module",
-  "main": "electron.js",
-  "build": {
-    "appId": "com.dmf.distribution-engine",
-    "files": [
-      "electron.js",
-      "server.js",
-      "src/**/*",
-      "public/**/*",
-      "package.json"
-    ]
-  },
   "scripts": {
-    "build": "for f in src/**/*.js; do node --check \"$f\"; done",
-    "dev": "node --watch server.js",
-    "start": "node server.js",
-    "electron": "node scripts/electron-launch.mjs",
-    "smoke": "node scripts/smoke.mjs",
-    "test": "node --test"
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
-    "electron": "^36.4.0",
-    "electron-builder": "^26.15.3"
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.10"
   }
 }
