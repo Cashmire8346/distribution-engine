@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <title>DMF Workshop</title>
+ <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+ <header class="masthead compact">
+    <p class="eyebrow"><a href="/">DMF RECORDS FLY HOOLIE ENT</a></p>
+    <h1>Workshop</h1>
+    <p class="subtitle">Work-in-progress ideas and notes.</p>
+ </header>
+
+ <main class="wide">
+    <section class="panel">
+      <h2 class="section-title">New Item</h2>
+      <form id="new-item" class="row wrap">
+        <input id="item-title" placeholder="Title" required />
+        <input id="item-notes" placeholder="Notes" />
+        <select id="item-status" aria-label="Status">
+          <option>idea</option>
+          <option>in-progress</option>
+          <option>done</option>
+        </select>
+        <button type="submit">Add</button>
+      </form>
+      <p class="mix-status warn" id="item-error"></p>
+    </section>
+
+    <section class="panel">
+      <h2 class="section-title">Items</h2>
+      <ul id="item-list" class="session-list"><li class="empty">Nothing yet.</li></ul>
+    </section>
+ </main>
+
+ <script type="module" src="/workshop.js"></script>
+</body>
+</html>
