@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <title>DMF Visual Engine</title>
+ <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+ <header class="masthead compact">
+    <p class="eyebrow"><a href="/">DMF RECORDS FLY HOOLIE ENT</a></p>
+    <h1>Da'Riyah</h1>
+    <p class="subtitle">DMF AI Visual Engine - plan a music video from your track: beat grid, scene cuts, style, render queue.</p>
+ </header>
+
+ <main class="wide">
+    <section class="panel">
+      <h2 class="section-title">New Video Project</h2>
+      <form id="new-project" class="row wrap">
+        <input id="project-title" placeholder="Video title" required />
+        <input id="project-artist" placeholder="Artist name" />
+        <input id="project-bpm" type="number" min="40" max="300" value="120" aria-label="BPM" />
+        <input id="project-duration" type="number" min="5" max="600" value="165" aria-label="Duration seconds" />
+        <select id="project-style" aria-label="Style preset"></select>
+        <input id="project-bars" type="number" min="1" max="16" value="4" aria-label="Bars per cut" />
+        <button type="submit">Build scene plan</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2 class="section-title">Render Queue</h2>
+      <ul id="job-list" class="session-list"><li class="empty">No jobs yet.</li></ul>
+    </section>
+
+    <section class="panel" id="job-detail" hidden>
+      <h2 class="section-title" id="job-title">Job</h2>
+      <p class="mix-status warn" id="render-notice"></p>
+      <p class="mix-status" id="provider-notice"></p>
+      <div class="timeline-legend">
+        <span>#</span><span>Start</span><span>End</span><span>Bar</span><span>Transition</span><span>Prompt</span>
+      </div>
+      <div id="scene-list" class="scene-list"></div>
+    </section>
+ </main>
+
+ <footer class="footnote">
+    <p>
+      Scene planning, beat-to-cut mapping, prompts and the render queue are implemented.
+      Generating the actual video frames requires a diffusion model or a hosted video API,
+      which is not wired up. This page plans the video; it does not render it.
+    </p>
+ </footer>
+
+ <script type="module" src="/video.js"></script>
+</body>
+</html>

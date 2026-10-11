@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DMF Studio Engine</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+
+<body>
+  <header class="masthead compact">
+    <p class="eyebrow"><a href="/">DMF RECORDS FLY HOOLIE ENT</a></p>
+    <h1>Studio</h1>
+    <p class="subtitle">Record vocals, arrange a timeline, save sessions, export a manifest.</p>
+  </header>
+
+  <main class="wide">
+    <section class="panel">
+      <h2 class="section-title">New Session</h2>
+      <form id="new-session" class="row">
+        <input id="session-title" placeholder="Song title" required />
+        <input id="session-artist" placeholder="Artist name" />
+        <button type="submit">Create session</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2 class="section-title">Sessions</h2>
+      <ul id="session-list" class="session-list">
+        <li class="empty">No sessions yet.</li>
+      </ul>
+    </section>
+
+    <section class="panel" id="session-detail" hidden>
+      <h2 class="section-title" id="detail-title">Session</h2>
+
+      <div class="transport" aria-label="Transport controls">
+        <button id="record-btn" type="button">Record vocal track</button>
+        <button id="add-beat-btn" type="button">Add beat track</button>
+        <button id="export-btn" type="button">Export manifest</button>
+      </div>
+
+      <p id="mix-status" class="mix-status"></p>
+
+      <div class="timeline-legend">
+        <span>Track</span><span>Start</span><span>Gain</span><span>Pan</span><span>Mute</span><span></span>
+      </div>
+      <div id="track-list" class="track-list"></div>
+
+      <pre id="export-output" class="output" hidden></pre>
+    </section>
+  </main>
+
+  <footer class="footnote">
+    <p>
+      Recording and mixing use the browser's Web Audio API and run on your machine.
+      Server-side audio processing (auto-mix, pitch correction, mastering) is not implemented.
+    </p>
+  </footer>
+
+  <script type="module" src="/studio.js"></script>
+</body>
+
+</html>
