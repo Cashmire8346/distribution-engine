@@ -63,7 +63,7 @@ export const DIVISIONS = Object.freeze({
       { name: 'append-only audit log', path: 'src/dariyah/audit.js:AuditLog' }
     ],
     blockedBy: [
-      'no code-generation model is connected (CodeProviderRegistry has only the unavailable stub)',
+      'no code-generation model is connected unless ANTHROPIC_API_KEY is set (the anthropic provider reports unavailable without it)',
       'no sandbox execution backend is connected (SandboxRunner has only NoSandbox)'
     ]
   },
@@ -81,9 +81,9 @@ export const DIVISIONS = Object.freeze({
       { name: 'append-only audit log', path: 'src/dariyah/audit.js:AuditLog' }
     ],
     blockedBy: [
-      'no code-generation model is connected (CodeProviderRegistry has only the unavailable stub)',
+      'no code-generation model is connected unless ANTHROPIC_API_KEY is set (the anthropic provider reports unavailable without it)',
       'applying a migration is not implemented - the gate only decides',
-      'RLS policy authoring is blocked on the live schema being unavailable'
+      'the initial RLS migration is written (supabase/migrations) but not applied; applying it needs a MigrationGate approval'
     ]
   }
 })

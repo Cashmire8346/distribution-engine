@@ -55,6 +55,14 @@ export function validateMetric(metric, context = {}) {
   return true
 }
 
+// With a history of readings, the current value is the most recent by asOf.
+// Picking the first match would silently report the oldest.
+function latestReading(artist, metricType, source) {
+  const matches = artist.metrics.filter((m) => m.metricType === metricType && m.source === source)
+  if (matches.length === 0) return null
+  return matches.reduce((latest, m) => (Date.parse(m.asOf) > Date.parse(latest.asOf) ? m : latest))
+}
+
 function normaliseArtist(input) {
   if (!input || typeof input !== 'object') {
     throw new RosterError('artist must be an object')
@@ -114,6 +122,26 @@ export class Roster {
     return normalised
   }
 
+  // Records one sourced reading. Readings are history: a new asOf is appended,
+  // never overwritten, and an identical (source, metricType, asOf) is refused.
+  addMetric(name, metric) {
+    const artist = this.#artists.get(name)
+    if (!artist) throw new RosterError('unknown artist', { artist: name })
+    validateMetric(metric, { artist: name })
+
+    const duplicate = artist.metrics.some(
+      (m) => m.source === metric.source && m.metricType === metric.metricType && m.asOf === metric.asOf
+    )
+    if (duplicate) throw new RosterError('duplicate reading for this source, metricType and asOf', { artist: name, field: 'metrics' })
+
+    const updated = Object.freeze({
+      ...artist,
+      metrics: Object.freeze([...artist.metrics, Object.freeze({ ...metric })])
+    })
+    this.#artists.set(name, updated)
+    return updated
+  }
+
   get(name) {
     return this.#artists.get(name) ?? null
   }
@@ -145,6 +173,37 @@ export class Roster {
     }
   }
 
+  // Latest sourced reading per (artist, source, metricType), grouped by
+  // source and metricType. A group's total is null unless every artist on the
+  // roster reports it: a partial sum would look authoritative and not be.
+  analytics() {
+    const artists = this.list()
+    const groups = new Map()
+    for (const artist of artists) {
+      for (const metric of artist.metrics) {
+        const key = `${metric.source}\u0000${metric.metricType}`
+        if (!groups.has(key)) groups.set(key, { source: metric.source, metricType: metric.metricType })
+      }
+    }
+
+    return [...groups.values()].map(({ source, metricType }) => {
+      const readings = artists
+        .map((artist) => ({ artist: artist.name, reading: latestReading(artist, metricType, source) }))
+        .filter((r) => r.reading !== null)
+        .map((r) => ({ artist: r.artist, value: r.reading.value, asOf: r.reading.asOf }))
+      const complete = readings.length === artists.length
+      return {
+        source,
+        metricType,
+        artistsReporting: readings.length,
+        artistsTotal: artists.length,
+        complete,
+        total: complete ? readings.reduce((sum, r) => sum + r.value, 0) : null,
+        readings
+      }
+    })
+  }
+
   // Artists whose Spotify profile is not yet linked. These are the ones that
   // cannot be linked out to and must not be shown with metrics.
   unlinked() {
@@ -171,19 +230,15 @@ export class Roster {
       }
     }
 
-    const asOfValues = contributors.flatMap((artist) =>
-      artist.metrics.filter((m) => m.metricType === metricType && m.source === source).map((m) => m.asOf)
-    )
+    const latest = contributors.map((artist) => latestReading(artist, metricType, source))
+    const asOfValues = latest.map((m) => m.asOf)
 
     return {
       complete: true,
-      total: contributors.reduce((sum, artist) => {
-        const match = artist.metrics.find((m) => m.metricType === metricType && m.source === source)
-        return sum + match.value
-      }, 0),
+      total: latest.reduce((sum, m) => sum + m.value, 0),
       contributors: contributors.map((artist) => artist.name),
-      // The oldest reading bounds the freshness of the total.
-      asOf: asOfValues.sort()[0]
+      // The oldest of the latest readings bounds the freshness of the total.
+      asOf: asOfValues.sort((a, b) => Date.parse(a) - Date.parse(b))[0]
     }
   }
 }
@@ -191,7 +246,7 @@ export class Roster {
 // The roster as supplied. Metrics are intentionally EMPTY: the listener
 // counts quoted in the brief have not been sourced or timestamped, and this
 // module will not carry a number it cannot attribute. Fill them from a
-// source you own, with an asOf stamp, via addMetric below.
+// source you own, with an asOf stamp, via Roster#addMetric (persisted by src/roster/persist.js).
 export const ROSTER_SEED = Object.freeze([
   {
     name: 'Big Homie Cash',

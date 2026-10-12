@@ -34,3 +34,28 @@ If any of the following are missing, the system denies:
 - required production configuration values
 
 This is the correct default for any delivery or builder path that can affect real DSP data.
+
+## Dashboard authentication
+
+The dashboard (`/app`) and every endpoint that touches money, approvals, or
+roster writes require a signed-in session. There is no default account.
+
+- `DMF_ADMIN_EMAIL`, `DMF_ADMIN_PASSWORD_HASH`, `DMF_SESSION_SECRET` must all be
+  set (secret at least 32 characters) or login is disabled and those endpoints
+  return 503.
+- Generate the hash and secret with `node scripts/hash-password.mjs '<password>'`.
+- Sessions last 12 hours. Login is throttled to 5 failures per minute per client.
+- In the desktop app, put the three values in `<userData>/.env` (KEY=VALUE per line).
+
+## Data files
+
+All under `DATA_DIR` (default `./.data`), written atomically, and a corrupt file
+stops the operation rather than being treated as empty:
+
+| File | Contents |
+|---|---|
+| `roster.json` | Sourced, timestamped artist metrics (`scripts/add-metric.mjs` or the Artists page) |
+| `approvals-export.json` | Release records and approvals; the same file `ApprovalGate` reads |
+| `campaigns.json` | Campaign spend and attributed revenue |
+| `royalties.json` | Royalty statement lines |
+| `dariyah-audit.ndjson` | Append-only audit log |
