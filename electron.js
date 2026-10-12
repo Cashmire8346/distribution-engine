@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron'
 import { spawn } from 'node:child_process'
+import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -7,6 +8,24 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const port = process.env.PORT || '3000'
 const appUrl = `http://localhost:${port}`
 let serverProcess = null
+
+// Credentials for the dashboard live in <userData>/.env (KEY=VALUE per line):
+//   DMF_ADMIN_EMAIL, DMF_ADMIN_PASSWORD_HASH, DMF_SESSION_SECRET
+// Generate the last two with: node scripts/hash-password.mjs '<password>'
+// Nothing is bundled with the app; without them login is disabled.
+function readUserEnv() {
+  try {
+    const raw = fs.readFileSync(path.join(app.getPath('userData'), '.env'), 'utf8')
+    const env = {}
+    for (const line of raw.split(/\r?\n/)) {
+      const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/)
+      if (match && !line.trim().startsWith('#')) env[match[1]] = match[2].replace(/^["']|["']$/g, '')
+    }
+    return env
+  } catch {
+    return {}
+  }
+}
 
 async function isServerAvailable() {
   try {
@@ -30,6 +49,7 @@ async function startServer() {
     stdio: 'inherit',
     env: {
       ...process.env,
+      ...readUserEnv(),
       PORT: port,
       DATA_DIR: app.getPath('userData'),
       ELECTRON_RUN_AS_NODE: '1'
@@ -55,7 +75,8 @@ const createWindow = () => {
     }
   })
 
-  win.loadURL(appUrl)
+  // The built dashboard if present, otherwise the plain roster pages.
+  win.loadURL(fs.existsSync(path.join(__dirname, 'dist', 'index.html')) ? `${appUrl}/app/` : appUrl)
 }
 
 app.whenReady().then(async () => {

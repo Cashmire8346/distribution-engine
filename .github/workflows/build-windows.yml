@@ -26,6 +26,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Build dashboard
+        run: npm run build
+
       - name: Package Windows installer
         run: npx electron-builder --win nsis --publish never
         env:

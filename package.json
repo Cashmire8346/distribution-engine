@@ -4,9 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "start": "node server.js",
+    "test": "node --test \"test/*.test.js\"",
+    "smoke": "node scripts/smoke.mjs",
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "electron": "node scripts/electron-launch.mjs",
+    "dist": "npm run build && electron-builder --win nsis --publish never"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -16,10 +21,30 @@
     "recharts": "^2.12.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3",
     "typescript": "^5.6.2",
     "vite": "^5.4.10"
+  },
+  "main": "electron.js",
+  "description": "DMF Distribution Engine",
+  "build": {
+    "appId": "com.dmf.distribution-engine",
+    "productName": "DMF Distribution Engine",
+    "files": [
+      "electron.js",
+      "server.js",
+      "src/**",
+      "public/**",
+      "dist/**",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
   }
 }

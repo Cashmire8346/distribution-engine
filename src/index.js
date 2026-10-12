@@ -21,6 +21,8 @@ export { generateErn, validateErnXml } from './ern/index.js'
 export { FileApprovalStore, ApprovalGate } from './approvals/index.js'
 export { deliverErn } from './ern/deliver.js'
 
+export { createAnthropicCodeProvider, DEFAULT_ANTHROPIC_MODEL } from './dariyah/anthropic-provider.js'
+
 export {
   Roster,
   RosterError,
@@ -30,6 +32,11 @@ export {
   parseSpotifyArtistUrl,
   validateMetric
 } from './roster/index.js'
+export { Auth, AuthError, hashPassword, verifyPassword } from './auth/index.js'
+export { ReleaseStore, ReleaseError, RELEASE_FORMATS } from './releases/index.js'
+export { CampaignStore, CampaignError, CAMPAIGN_STATUSES, roiFor } from './campaigns/index.js'
+export { RoyaltyStore, RoyaltyError, ROYALTY_SOURCES, splitGross } from './royalties/index.js'
+export { loadRoster, saveRoster, recordMetric, rosterFromRows } from './roster/persist.js'
 
 export {
   StudioStore,
