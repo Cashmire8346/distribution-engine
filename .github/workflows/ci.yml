@@ -23,5 +23,8 @@ jobs:
       - name: Type check
         run: node --check src/index.js && node --check src/approvals/index.js && node --check src/ern/deliver.js && node --check src/config.js
 
+      - name: Build dashboard (typecheck + bundle)
+        run: npm run build
+
       - name: Test
         run: npm test -- --test-reporter=spec
